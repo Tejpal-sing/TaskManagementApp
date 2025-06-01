@@ -6,7 +6,6 @@ import { AuthRequest } from '../middleware/auth';
 const prisma = new PrismaClient();
 
 export const createController = async (req:AuthRequest, res: Response) => {
-  const todoId=parseInt(req.params.id);
   const { title, body } = req.body;
   const userId=req.user!.id;
 
