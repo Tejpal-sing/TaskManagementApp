@@ -4,6 +4,6 @@ import * as createControllers from '../controllers/createController';
 const router=express.Router();
 import {verifyToken} from "../middleware/auth";
 
-router.post("/todos",verifyToken,createControllers.createController);
+router.post("",verifyToken,createControllers.createController);
 
 export default router;

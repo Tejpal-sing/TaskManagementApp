@@ -32,10 +32,10 @@ app.get('/todos', async (req:Request, res:Response) => {
 
 
 app.use("/api/auth",authRoutes);
-app.use("/api/create", createRoutes);
-app.use("/api/retrieve",retrieveRoutes);
-app.use("/api/delete",deleteRoutes);
-app.use("/api/update",updateRoutes);
+app.use("/api/todos/create", createRoutes);
+app.use("/api/todos/retrieve",retrieveRoutes);
+app.use("/api/todos/delete",deleteRoutes);
+app.use("/api/todos/update",updateRoutes);
 
 const PORT = process.env.PORT || 3000;
 
