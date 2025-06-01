@@ -1,8 +1,9 @@
 import express, { Router } from 'express';
 import { retrieveController } from '../controllers/retrieveController';
+import { verifyToken } from '../middleware/auth';
 
 const router = Router();
 
-router.get("/retrieve/:id", retrieveController);
+router.get("/todos/:id",verifyToken, retrieveController);
 
 export default router;

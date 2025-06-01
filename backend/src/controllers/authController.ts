@@ -73,3 +73,4 @@ export const logout=(req: Request, res: Response)=>{
         sameSite: "none", // adjust as needed
     }).status(200).json("User has been logged out.");
 }
+

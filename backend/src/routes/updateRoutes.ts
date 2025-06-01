@@ -5,5 +5,5 @@ import { verifyToken } from '../middleware/auth';
 
 const router = Router();
 
-router.put("/update/:id", verifyToken, updateControllers);
+router.put("todos/:id", verifyToken, updateControllers);
 export default router;
