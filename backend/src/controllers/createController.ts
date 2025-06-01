@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { AuthRequest } from '../middleware/auth';
 
 
 const prisma = new PrismaClient();
 
-export const createController = async (req: Request, res: Response) => {
-  const { title, body,userId } = req.body;
+export const createController = async (req:AuthRequest, res: Response) => {
+  const { title, body } = req.body;
+  const userId=req.user!.id;
+
   console.log("Creating todo table...");
   try{
     const newTodo=await prisma.todos.create({

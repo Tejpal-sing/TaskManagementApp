@@ -1,23 +1,21 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { AuthRequest } from "../middleware/auth";
 
 const prisma = new PrismaClient();
 
-export const retrieveController = async (req: Request, res: Response) => {
+export const retrieveController = async (req: AuthRequest, res: Response) => {
     const { id } = req.params;
-
+    const userId2=req.user!.id;
     console.log('Received ID:', id); 
-    if (!id || isNaN(Number(id[1]))) {
-        console.error('Invalid ID format:', id);
-        return res.status(400).json({ error: 'Invalid ID format' });
-    }
 
-    const todoId = Number(id[1]);
+    const todoId = Number(id);
 
     try {
         const todo = await prisma.todos.findUnique({
             where: {
-                id: todoId
+                id: todoId,
+                userId:userId2
             }
         });
 

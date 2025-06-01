@@ -6,6 +6,7 @@ import createRoutes from '../src/routes/createRoutes';
 import authRoutes from '../src/routes/authRoutes';
 import retrieveRoutes from '../src/routes/retrieveRoutes';
 import updateRoutes from '../src/routes/updateRoutes';
+import deleteRoutes from '../src/routes/deleteRoutes';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -13,12 +14,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Basic health check route
 app.get('/', (req:Request , res:Response) => {
   res.json({ message: 'Server is running!' });
 });
 
-// Example route using Prisma
+
 app.get('/todos', async (req:Request, res:Response) => {
   try {
     const todos = await prisma.todos.findMany();
@@ -32,9 +32,10 @@ app.get('/todos', async (req:Request, res:Response) => {
 
 
 app.use("/api/auth",authRoutes);
-app.use("/api", createRoutes);
-app.use("/api/users:id/",retrieveRoutes);
-app.use("/api",updateRoutes);
+app.use("/api/todos/create", createRoutes);
+app.use("/api/todos/retrieve",retrieveRoutes);
+app.use("/api/todos/delete",deleteRoutes);
+app.use("/api/todos/update",updateRoutes);
 
 const PORT = process.env.PORT || 3000;
 
