@@ -1,6 +1,8 @@
 import { AuthRequest } from "../middleware/auth";
 import {Request,Response} from 'express';
 import { PrismaClient } from "@prisma/client";
+import {deleteService} from "../services/deleteService";
+import { retrieveService } from "../services/retrieveService";
 const prisma =new PrismaClient();
 
 
@@ -9,22 +11,12 @@ export const deleteController=async (req:AuthRequest,res:Response)=>{
     const todoId=Number(req.params.id);
 
     try{
-        const  existingTodo=await prisma.todos.findFirst({
-            where:{
-                id:todoId,
-                userId:userId
-            }
-        });
+        const existingTodo=await retrieveService(req);
 
         if(!existingTodo){
             return res.status(404).json({ error: "Todo not found or you don't have permission to delete it" });
         }
-
-        await prisma.todos.delete({
-            where:{
-                id:todoId
-            }
-        });
+        deleteService(req);
 
         res.json({message:"Todo deleted successfully"});
     }catch(err){

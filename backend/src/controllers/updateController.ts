@@ -2,8 +2,7 @@
 import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth';
-
-const prisma = new PrismaClient();
+import { updateService } from '../services/updateService';
 
 export const updateControllers = async (req: AuthRequest, res: Response) => {
     try {
@@ -19,27 +18,14 @@ export const updateControllers = async (req: AuthRequest, res: Response) => {
         }
 
         // First check if todo exists and belongs to the user
-        const existingTodo = await prisma.todos.findFirst({
-            where: {
-                id: todoId,
-                userId: userId
-            }
-        });
+        const existingTodo = (await updateService(req)).existingTodo;
 
         if (!existingTodo) {
             return res.status(404).json({ error: "Todo not found or you don't have permission to update it" });
         }
 
         // If todo exists and belongs to user, update it
-        const updatedTodo = await prisma.todos.update({
-            where: {
-                id: todoId
-            },
-            data: {
-                title,
-                body
-            }
-        });
+        const updatedTodo = (await updateService(req)).updatedTodo;
 
         res.json(updatedTodo);
     } catch (err) {

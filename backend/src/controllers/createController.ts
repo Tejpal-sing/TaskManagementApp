@@ -1,28 +1,13 @@
-import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { Response } from 'express';
+import { createService } from '../services/createService';
 import { AuthRequest } from '../middleware/auth';
 
-
-const prisma = new PrismaClient();
-
 export const createController = async (req:AuthRequest, res: Response) => {
-  const { title, body } = req.body;
-  const userId=req.user!.id;
-
-  console.log("Creating todo table...");
-  try{
-    const newTodo=await prisma.todos.create({
-        data:{
-            title,
-            body,
-            userId
-        }
+    try {
+        const newtodo = await createService(req);
+        res.status(201).json(newtodo);
     }
-    )
-    res.json(newTodo);
-  }
-  catch(err){
-    res.json(err);
-  }
-  
+    catch(err) {
+        res.status(400).json({ message: "Todo not created successfully" });
+    }
 };

@@ -1,34 +1,14 @@
 import {Request,Response} from 'express';
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-
-const prisma=new PrismaClient();
-
+import * as authService from '../services/authService';
 
 export const register=async (req: Request, res: Response)=>{
-    const {name,email,password}=req.body;
-    const hashedPassword=await bcrypt.hash(password,10);
-
     try{
-        const existingUser = await prisma.users.findUnique({
-            where: { email }
-          });  
-        if(existingUser) {
+        const existingUser = await authService.checkExistingUser(req); 
+        if(existingUser !== null) {
             return res.status(400).json({ error: 'Email already exists' });
-        } 
-
-        const newUser=await prisma.users.create({
-            data:{
-                name,
-                email,
-                password: hashedPassword
-            }
-        })
-
-        const {password: _, ...userWithoutPassword}=newUser;
-        res.status(201).json(userWithoutPassword);
+        }
+        const newUser=await authService.createNewUser(req);
+        res.status(201).json(newUser);
     }
     catch (error) {
         res.status(500).json({ error: 'Registration failed' });
@@ -36,30 +16,18 @@ export const register=async (req: Request, res: Response)=>{
 }
 
 export const login = async (req: Request, res: Response) => {
-    const {email, password} = req.body;
     try {
-        const emailMatch = await prisma.users.findUnique({
-            where: {
-                email: email
-            }
-        });
-
+        const emailMatch = await authService.checkExistingUser(req);
         if (!emailMatch) {
             return res.status(401).json({ error: 'Invalid email id' });
         }
-
-        const matchPassword = await bcrypt.compare(password, emailMatch.password);
         
+        const matchPassword = (await authService.loginService(req)).matchPassword;
         if (!matchPassword) {
             return res.status(401).json({ error: 'Invalid password' });
         }
 
-        const accessToken = jwt.sign(
-            { id: emailMatch.id, email: emailMatch.email },
-            'your_jwt_secret',  // Hardcoded secret
-            { expiresIn: '1h' }
-        );
-
+        const accessToken = (await authService.loginService(req)).accessToken;
         res.json({ accessToken });
     } catch (error) {
         res.status(500).json({ error: 'Login Failed' });
