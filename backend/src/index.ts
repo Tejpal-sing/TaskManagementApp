@@ -7,6 +7,7 @@ import authRoutes from '../src/routes/authRoutes';
 import retrieveRoutes from '../src/routes/retrieveRoutes';
 import updateRoutes from '../src/routes/updateRoutes';
 import deleteRoutes from '../src/routes/deleteRoutes';
+import retrieveUserDataRoutes  from './routes/retrieveUserDataRoutes';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -36,10 +37,11 @@ app.use("/api/todos/create", createRoutes);
 app.use("/api/todos/retrieve",retrieveRoutes);
 app.use("/api/todos/delete",deleteRoutes);
 app.use("/api/todos/update",updateRoutes);
+app.use("/api/todos/retrieveUserData",retrieveUserDataRoutes);
 
 // this is just for testing git operations
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

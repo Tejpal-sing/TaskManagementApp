@@ -3,13 +3,20 @@ import { AuthRequest } from '../middleware/auth';
 
 
 export const createRepository=async (req:AuthRequest)=> {
+        console.log(req.body);
         const {title,body}=req.body;
         const userId=req.user!.id;
-        return await prisma.todos.create({
-            data: {
-                title,
-                body,
-                userId
-            }
-        });
+        try{
+            const res=await prisma.todos.create({
+                data: {
+                    title,
+                    body,
+                    userId
+                }
+            });
+            console.log(res);
+            return res;
+        }catch(err){
+            console.log(err);
+        }
 };

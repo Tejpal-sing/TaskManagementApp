@@ -8,7 +8,7 @@ export const retrieveRepository=async (req:AuthRequest)=> {
     console.log('Received ID:', id); 
 
     const todoId = Number(id);
-    const todo=await prisma.todos.findUnique({
+    const todo=await prisma.todos.findMany({
         where: {
             id: todoId,
             userId:userId2
