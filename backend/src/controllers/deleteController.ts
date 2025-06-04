@@ -9,7 +9,6 @@ const prisma =new PrismaClient();
 export const deleteController=async (req:AuthRequest,res:Response)=>{
     const userId=req.user!.id;
     const todoId=Number(req.params.id);
-
     try{
         const existingTodo=await retrieveService(req);
 
