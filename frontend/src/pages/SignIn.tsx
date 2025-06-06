@@ -17,9 +17,10 @@ import ForgotPassword from '../components/ForgotPassword';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../components/CustomIcons';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom'; // Add this at the top with other import
+import logo from '../assets/currentlogo.png';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -64,12 +65,13 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn(props: { disableCustomTheme?: boolean }) {
-    const navigate=useNavigate();
+  const navigate=useNavigate();
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [open, setOpen] = React.useState(false);
+
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -78,40 +80,6 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
   const handleClose = () => {
     setOpen(false);
   };
-
-  const handleSubmit =async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (emailError || passwordError) {
-      
-      return;
-    }
-    // const data = new FormData(event.currentTarget);
-
-    // const userData={
-    //     email:data.get('email'),
-    //     password:data.get('password'),
-    // }
-    
-    try {
-        const data = new FormData(event.currentTarget);
-        const userData = {
-          email: data.get('email'),
-          password: data.get('password'),
-        }
-        
-        const res = await axios.post("http://localhost:8000/api/auth/login", userData);
-        console.log("Response:", res.data);
-        
-        if (res.data.accessToken) {
-          localStorage.setItem('accessToken', res.data.accessToken);
-          navigate('/home');
-        } else {
-          console.error("No token in response");
-        }
-      } catch (error) {
-        console.error("Login error:", error);
-      }
-};
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
@@ -140,13 +108,66 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     return isValid;
   };
 
+  const handleSubmit =async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!validateInputs()) {
+      return;
+    }
+    try {
+        const data = new FormData(event.currentTarget);
+        const userData = {
+          email: data.get('email'),
+          password: data.get('password'),
+        }
+        
+        const res = await axios.post("http://localhost:8000/api/auth/login", userData);
+        console.log("Response:", res.data);
+        
+        if (res.data.accessToken) {
+          localStorage.setItem('accessToken', res.data.accessToken);
+          navigate('/home');
+        } else {
+          console.error("No token in response");
+        }
+      } catch (err) {
+        if(axios.isAxiosError(err)){
+          if (err.response?.status === 401) {
+            setEmailError(true);
+            setEmailErrorMessage('Email mismatch or password is not correct');
+          }
+      }
+    };
+  }
+
+
+
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
-          <SitemarkIcon />
+        <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              mb: 2,
+            }}
+          >
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              sx={{
+                width: 40,
+                height: 40,
+              }}
+            />
+            <Typography variant="h5" fontWeight="bold">
+              TodoApp
+            </Typography>
+          </Box>
           <Typography
             component="h1"
             variant="h4"
@@ -199,10 +220,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+
             <ForgotPassword open={open} handleClose={handleClose} />
             <Button
               type="submit"
@@ -212,7 +230,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
             >
               Sign in
             </Button>
-            <Link
+            {/* <Link
               component="button"
               type="button"
               onClick={handleClickOpen}
@@ -220,26 +238,10 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
               sx={{ alignSelf: 'center' }}
             >
               Forgot your password?
-            </Link>
+            </Link> */}
           </Box>
           <Divider>or</Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign in with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign in with Facebook
-            </Button>
             <Typography sx={{ textAlign: 'center' }}>
               Don&apos;t have an account?{' '}
               <Link
@@ -256,4 +258,4 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       </SignInContainer>
     </AppTheme>
   );
-}
+};

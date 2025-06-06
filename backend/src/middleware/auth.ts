@@ -25,7 +25,7 @@ export const verifyToken = async (req: AuthRequest, res: Response, next: NextFun
     console.log(token);
 
     try {
-        const decoded = jwt.verify(token, 'your_jwt_secret') as JwtPayload;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
         req.user = { id: decoded.id };
         next();
     } catch (err: unknown) {

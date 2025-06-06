@@ -19,7 +19,9 @@ import { GoogleIcon, FacebookIcon, SitemarkIcon } from '../components/CustomIcon
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 import { Link as RouterLink } from 'react-router-dom'; // Add this at the top with other imports
-
+import logo from '../assets/currentlogo.png';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 
 
@@ -73,6 +75,13 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState('');
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error'>('success');
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
+  };
 
   const validateInputs = () => {
     const email = document.getElementById('email') as HTMLInputElement;
@@ -113,7 +122,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 
   const handleSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (nameError || emailError || passwordError) {
+    if (!validateInputs()) {
       return;
     }
     try{
@@ -127,17 +136,24 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       const response = await axios.post("http://localhost:8000/api/auth/register", userData);
     
       if (response.status === 201 || response.status === 200) {
+        setSnackbarMessage('Registration successful! Redirecting to login...');
+        setSnackbarSeverity('success');
+        setOpenSnackbar(true);
+
+        setTimeout(() => {
+          navigate('/signin');
+        }, 2000);
         console.log('Registration successful:', response.data);
-        navigate('/signin'); // This will now work after successful registration
       }
     }catch(err){
       if (axios.isAxiosError(err)) {
-        if (err.response?.status === 409) {
+        if (err.response?.status === 400) {
           setEmailError(true);
           setEmailErrorMessage('Email already exists');
         } else {
+          setEmailError(true);
+          setEmailErrorMessage('Registration failed. Please try again.');
           console.error('Registration failed:', err.response?.data);
-          // Handle other errors
         }
       }
     }
@@ -151,7 +167,27 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
-          <SitemarkIcon />
+        <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              mb: 2,
+            }}
+          >
+            <Box
+              component="img"
+              src={logo}
+              alt="Logo"
+              sx={{
+                width: 40,
+                height: 40,
+              }}
+            />
+            <Typography variant="h5" fontWeight="bold">
+              TodoApp
+            </Typography> 
+          </Box>       
           <Typography
             component="h1"
             variant="h4"
@@ -209,15 +245,11 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="allowExtraEmails" color="primary" />}
-              label="I want to receive updates via email."
-            />
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
             >
               Sign up
             </Button>
@@ -226,22 +258,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             <Typography sx={{ color: 'text.secondary' }}>or</Typography>
           </Divider>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign up with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign up with Facebook
-            </Button>
+  
             <Typography sx={{ textAlign: 'center' }}>
               Already have an account?{' '}
               <Link
@@ -255,6 +272,20 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             </Typography>
           </Box>
         </Card>
+        <Snackbar
+          open={openSnackbar}
+          autoHideDuration={6000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert 
+            onClose={handleCloseSnackbar} 
+            severity={snackbarSeverity}
+            sx={{ width: '100%' }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </SignUpContainer>
     </AppTheme>
   );

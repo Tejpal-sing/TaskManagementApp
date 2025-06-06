@@ -8,7 +8,8 @@ import { Crud, DataModel, DataSource, DataSourceCache } from '@toolpad/core/Crud
 import { DemoProvider, useDemoRouter } from '@toolpad/core/internal';
 import { createSelectorCreator } from '../../src/reselect-shim';
 import axios from 'axios';
-
+import logo from '../assets/currentlogo.png';
+import { Box } from '@mui/material';
 const NAVIGATION: Navigation = [
   {
     segment: 'notes',
@@ -270,7 +271,6 @@ interface DemoProps {
 }
 
 
-
 export default function CrudBasic(props: DemoProps) {
   const { window } = props;
 
@@ -303,23 +303,15 @@ export default function CrudBasic(props: DemoProps) {
         router={router}
         theme={demoTheme}
         window={demoWindow}
+        branding={{
+          title: 'TodoApp',
+          logo: (
+            <Box component="img" src={logo} alt="Logo" sx={{ width: 40, height: 40 }} />
+          ),
+        }}
       >
         <DashboardLayout defaultSidebarCollapsed>
-          <PageContainer title={title}>  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-    <button
-      onClick={handleLogout}
-      style={{
-        padding: '8px 12px',
-        border: 'none',
-        background: '#f44336',
-        color: '#fff',
-        borderRadius: 4,
-        cursor: 'pointer',
-      }}
-    >
-      Logout
-    </button>
-  </div>
+          <PageContainer title={title}> 
             {/* preview-start */}
             <Crud<Note>
               dataSource={notesDataSource}

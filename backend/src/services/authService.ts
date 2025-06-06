@@ -13,12 +13,12 @@ export const createNewUser=async(req:Request)=>{
 }
 
 export const loginService=async(req:Request)=>{
-    const {email, password} = req.body;
+    const {password} = req.body;
     const existingUser=await authRepository.findExistingUser(req);
     const matchPassword = await bcrypt.compare(password, existingUser!.password);       
     const accessToken = jwt.sign(
         { id: existingUser!.id, email: existingUser!.email },
-        'your_jwt_secret',  // Hardcoded secret
+        process.env.JWT_SECRET!,  // Hardcoded secret
         { expiresIn: '1h' }
     );
     return {matchPassword,accessToken};

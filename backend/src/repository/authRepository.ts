@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma";
+import prisma from "../utils/prisma";
 import {Request} from 'express';
 import bcrypt from 'bcryptjs';
 export const findExistingUser=async (req:Request)=>{

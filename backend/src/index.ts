@@ -2,12 +2,10 @@ import express from 'express';
 import {Request,Response,NextFunction} from 'express';
 const { PrismaClient } = require('@prisma/client');
 import cors from 'cors';
-import createRoutes from '../src/routes/createRoutes';
-import authRoutes from '../src/routes/authRoutes';
-import retrieveRoutes from '../src/routes/retrieveRoutes';
-import updateRoutes from '../src/routes/updateRoutes';
-import deleteRoutes from '../src/routes/deleteRoutes';
-import retrieveUserDataRoutes  from './routes/retrieveUserDataRoutes';
+import todoRoutes from "../src/routes/todoRoutes";
+import authRoutes from "../src/routes/authRoutes";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const prisma = new PrismaClient();
 const app = express();
@@ -25,21 +23,16 @@ app.get('/todos', async (req:Request, res:Response) => {
     const todos = await prisma.todos.findMany();
     res.json(todos);
   } catch (error) {
-    console.error('Error fetching todos:', error);
     res.status(500).json({ error: 'Error fetching todos' });
   }
 });
 
-
-
 app.use("/api/auth",authRoutes);
-app.use("/api/todos/create", createRoutes);
-app.use("/api/todos/retrieve",retrieveRoutes);
-app.use("/api/todos/delete",deleteRoutes);
-app.use("/api/todos/update",updateRoutes);
-app.use("/api/todos/retrieveUserData",retrieveUserDataRoutes);
-
-// this is just for testing git operations
+app.use("/api/todos", todoRoutes);
+app.use("/api/todos",todoRoutes);
+app.use("/api/todos",todoRoutes);
+app.use("/api/todos",todoRoutes);
+app.use("/api/todos",todoRoutes);
 
 const PORT = process.env.PORT || 8000;
 
