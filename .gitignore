@@ -1,1 +1,9 @@
 /node_modules
+
+/biome.json
+
+/package-lock.json
+
+/package.json
+
+/yarn.lock
