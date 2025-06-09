@@ -1,54 +1,57 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt, { JsonWebTokenError,TokenExpiredError } from 'jsonwebtoken';
+import { Request, Response, NextFunction } from "express";
+import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 
 export interface AuthRequest extends Request {
-    user?: {
-        id: number;
-    }
+	user?: {
+		id: number;
+	};
 }
 
 interface JwtPayload {
-    id: number;
-    iat?: number;
-    exp?: number;
+	id: number;
+	iat?: number;
+	exp?: number;
 }
 
-export const verifyToken = async (req: AuthRequest, res: Response, next: NextFunction) => {
- 
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'No token provided' });
-    }
+export const verifyToken = async (
+	req: AuthRequest,
+	res: Response,
+	next: NextFunction,
+) => {
+	const authHeader = req.headers.authorization;
 
-    const token = authHeader.split(' ')[1];
-    console.log(token);
+	if (!authHeader || !authHeader.startsWith("Bearer ")) {
+		return res.status(401).json({ error: "No token provided" });
+	}
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-        req.user = { id: decoded.id };
-        next();
-    } catch (err: unknown) {
-        if (err instanceof TokenExpiredError) {
-            return res.status(401).json({
-                success: false,
-                message: "Token has expired"
-            });
-        } else if (err instanceof JsonWebTokenError) {
-            return res.status(401).json({
-                success: false,
-                message: "Token is not valid"
-            });
-        }
-        if (err instanceof JsonWebTokenError) {
-            return res.status(401).json({
-                success: false,
-                message: "Token is not valid"
-            });
-        }
-        return res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }
+	const token = authHeader.split(" ")[1];
+	console.log(token);
+
+	try {
+		const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+		req.user = { id: decoded.id };
+		next();
+	} catch (err: unknown) {
+		if (err instanceof TokenExpiredError) {
+			return res.status(401).json({
+				success: false,
+				message: "Token has expired",
+			});
+		} else if (err instanceof JsonWebTokenError) {
+			return res.status(401).json({
+				success: false,
+				message: "Token is not valid",
+			});
+		}
+		if (err instanceof JsonWebTokenError) {
+			return res.status(401).json({
+				success: false,
+				message: "Token is not valid",
+			});
+		}
+		return res.status(500).json({
+			success: false,
+			message: "Server error",
+		});
+	}
 };
