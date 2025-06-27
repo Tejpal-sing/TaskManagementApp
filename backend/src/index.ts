@@ -1,5 +1,5 @@
 import express from "express";
-import { Request, Response, NextFunction } from "express";
+import type { Request, Response } from "express";
 const { PrismaClient } = require("@prisma/client");
 import cors from "cors";
 import todoRoutes from "../src/routes/todoRoutes";
@@ -10,8 +10,14 @@ dotenv.config();
 const prisma = new PrismaClient();
 const app = express();
 
+// CORS configuration - Allow all origins for cross-origin requests
+app.use(cors({
+	origin: true, // Allow all origins
+	credentials: true,
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}));
 app.use(express.json());
-app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
 	res.json({ message: "Server is running!" });
