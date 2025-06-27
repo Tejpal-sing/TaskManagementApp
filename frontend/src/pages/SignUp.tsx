@@ -15,10 +15,11 @@ import AppTheme from "../shared-theme/AppTheme";
 import ColorModeSelect from "../shared-theme/ColorModeSelect";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom"; // Add this at the top with other imports
+import { Link as RouterLink } from "react-router-dom";
 import logo from "../assets/currentlogo.png";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import API_ENDPOINTS from "../config/api";
 
 const Card = styled(MuiCard)(({ theme }) => ({
 	display: "flex",
@@ -131,7 +132,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
 			};
 			console.log(userData);
 			const response = await axios.post(
-				"http://localhost:8000/api/auth/register",
+				API_ENDPOINTS.REGISTER,
 				userData,
 			);
 

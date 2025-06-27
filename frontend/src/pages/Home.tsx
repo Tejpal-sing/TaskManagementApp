@@ -12,6 +12,7 @@ import logo from "../assets/currentlogo.png";
 import { Box, Button, Popover, styled } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
+import API_ENDPOINTS from "../config/api";
 
 const LogoButton = styled(Box)({
 	cursor: "pointer",
@@ -86,7 +87,7 @@ export const notesDataSource: DataSource<Note> = {
 			const accessToken = localStorage.getItem("accessToken");
 
 			const response = await axios.get(
-				"http://localhost:8000/api/todos/retrieveUserData",
+				API_ENDPOINTS.RETRIEVE_USER_DATA,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -166,7 +167,7 @@ export const notesDataSource: DataSource<Note> = {
 			const accessToken = localStorage.getItem("accessToken");
 
 			const res = await axios.get(
-				`http://localhost:8000/api/todos/retrieve/${noteId}`,
+				API_ENDPOINTS.RETRIEVE_TODO(String(noteId)),
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -186,7 +187,7 @@ export const notesDataSource: DataSource<Note> = {
 			const accessToken = localStorage.getItem("accessToken");
 
 			const res = await axios.post(
-				`http://localhost:8000/api/todos/create`,
+				API_ENDPOINTS.CREATE_TODO,
 				data,
 				{
 					headers: {
@@ -209,7 +210,7 @@ export const notesDataSource: DataSource<Note> = {
 			const accessToken = localStorage.getItem("accessToken");
 			console.log("noteID is:", noteId);
 			const response = await axios.put(
-				`http://localhost:8000/api/todos/update/${noteId}`,
+				API_ENDPOINTS.UPDATE_TODO(String(noteId)),
 				data,
 				{
 					headers: {
@@ -232,7 +233,7 @@ export const notesDataSource: DataSource<Note> = {
 			const accessToken = localStorage.getItem("accessToken");
 
 			const res = await axios.delete(
-				`http://localhost:8000/api/todos/delete/${noteId}`,
+				API_ENDPOINTS.DELETE_TODO(String(noteId)),
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
