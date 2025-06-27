@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://todoapp-yhq7.vercel.app';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://https://task-management-app-kejo.vercel.app/';
 
 export const API_ENDPOINTS = {
   // Auth endpoints
